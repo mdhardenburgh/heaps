@@ -57,7 +57,7 @@ heap after successive calls of `maxHeapify()`.
 Given an array `A` ...
 ```
 buildMaxHeap(A)
-    A.heapSize() = A.length()
+    A.heapSize = A.length()
     for(i = (A.length()/2); i > 1; i--)
         maxHeapify(A, i)
 ```
@@ -83,7 +83,7 @@ heapsort(A)
 # Priority Queues
 Popular application of heaps is priority queues. A priority queue maintains a 
 set of elements, S, each with an associated key. A max priority queue has the
-following 4 opperations: 
+following 4 operations: 
 * `insert(S, x)`: Given the set S and the element x, inserts the element x into 
 the set S.
 * `maxinmum(S)`: Given the set S and the element x, returns the element x of the 
@@ -132,4 +132,9 @@ heapIncreaseKey(A, i, key) // O(log n)
     while(i > 1 && A[parent(i)] < A[i])
         exchange(A[i], A[parent(i)])
         i = parent(i)
+
+maxHeapInsert(A, key)
+    A.heapSize++
+    A[A.heapSize()] = -inf
+    heapIncreaseKey(A, A.heapSize(), key)
 ```

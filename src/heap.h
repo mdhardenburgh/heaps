@@ -1,4 +1,3 @@
-#include <vector>
 #include <cstdint>
 #include <string>
 #include <tuple>
@@ -8,9 +7,9 @@ template <class T> class maxHeap
 {
     public:
         maxHeap() = default;
-        maxHeap(std::vector<std::vector<std::tuple<T, uint32_t>>> arr);
+        maxHeap(std::vector<std::tuple<T, uint32_t>> arr);
         ~maxHeap();
-        std::vector<std::vector<std::tuple<T, uint32_t>>> heapsort();
+        std::vector<std::tuple<T, uint32_t>> heapsort();
         void buildMaxHeap();
         uint32_t heapSize();
         T heapMaximum();
@@ -22,13 +21,22 @@ template <class T> class maxHeap
         uint32_t left(uint32_t index);
         uint32_t right(uint32_t index);
         void exchange(std::tuple<T, uint32_t>& A, std::tuple<T, uint32_t>& B);
-        void compare(const std::tuple<T, uint32_t>&, const std::tuple<T, uint32_t>&, const std::string&);
-
-        void maxHeapify(std::vector<std::vector<std::tuple<T, uint32_t>>> arr, uint32_t index, uint32_t heapSize);
+        void maxHeapify(std::vector<std::tuple<T, uint32_t>> arr, uint32_t index, uint32_t heapSize);
 
         std::vector<std::tuple<T, uint32_t>> m_arr;
         uint32_t m_heapSize;
 };
+
+template <class T> maxHeap<T>::maxHeap(std::vector<std::tuple<T, uint32_t>> arr)
+{
+    m_arr = arr;
+    buildMaxHeap();
+}
+
+template <class T> maxHeap<T>::~maxHeap()
+{
+
+}
 
 /**
  * @brief returns the index of parent of the node at the specified index
@@ -40,12 +48,12 @@ template <class T> uint32_t maxHeap<T>::parent(uint32_t index)
 
 template <class T> uint32_t maxHeap<T>::left(uint32_t index)
 {
-    return 2*index;
+    return (2*index)-2;
 }
 
-template <class T> uint32_t maxHeap<T>::left(uint32_t index)
+template <class T> uint32_t maxHeap<T>::right(uint32_t index)
 {
-    return (2*index)+1;
+    return (2*index)-1;
 }
 
 template <class T> uint32_t maxHeap<T>::heapSize()
@@ -62,11 +70,11 @@ template <class T> void maxHeap<T>::exchange(std::tuple<T, uint32_t>& A, std::tu
     B = temp;
 }
 
-template <class T> void maxHeap<T>::maxHeapify(std::vector<std::vector<std::tuple<T, uint32_t>>> arr, uint32_t index, uint32_t heapSize)
+template <class T> void maxHeap<T>::maxHeapify(std::vector<std::tuple<T, uint32_t>> arr, uint32_t index, uint32_t heapSize)
 {
     uint32_t largest = 0;
     
-    if((left(index) <= heapSize) && (compare(arr.at(left(index)), arr.at(index), ">")))
+    if((left(index) <= heapSize) && (std::get<1>(arr.at(left(index))) > std::get<1>(arr.at(index))))
     {
         largest = left(index);
     }
@@ -75,7 +83,7 @@ template <class T> void maxHeap<T>::maxHeapify(std::vector<std::vector<std::tupl
         largest = index;
     }
 
-    if((right(index) <= heapSize) && (compare(arr.at(right(index)), arr.at(largest), ">")))
+    if((right(index) <= heapSize) && (std::get<1>(arr.at(right(index))) > std::get<1>(arr.at(largest))))
     {
         largest = right(index);
     }
@@ -83,7 +91,7 @@ template <class T> void maxHeap<T>::maxHeapify(std::vector<std::vector<std::tupl
     if(largest != index)
     {
         exchange(arr.at(index), arr.at(largest));
-        maxHeapify(arr, index);
+        maxHeapify(arr, index, heapSize);
     }
 }
 
@@ -97,7 +105,7 @@ template <class T> void maxHeap<T>::buildMaxHeap()
 }
 
 // assume we already have a max heap
-template <class T> std::vector<std::vector<std::tuple<T, uint32_t>>> maxHeap<T>::heapsort()
+template <class T> std::vector<std::tuple<T, uint32_t>> maxHeap<T>::heapsort()
 {
     // create a copy of the array
     std::vector<std::tuple<T, uint32_t>> sorted = m_arr;
@@ -122,11 +130,11 @@ template <class T> T maxHeap<T>::heapExtractMax()
     T max;
     if(heapSize() < 1)
     {
-        std::cout<<"heap underflow"<<std::end;
+        std::cout<<"heap underflow"<<std::endl;
     }
 
     max = std::get<0>(m_arr.at(0));
-    std::get<0>(m_arr.at(0)) = std::get<0>(m_arr.at(heapSize()))
+    std::get<0>(m_arr.at(0)) = std::get<0>(m_arr.at(heapSize()));
     m_heapSize--;
     maxHeapify(m_arr, 0, m_heapSize);
     return max;
@@ -134,6 +142,7 @@ template <class T> T maxHeap<T>::heapExtractMax()
 
 template <class T> void maxHeap<T>::heapIncreaseKey(uint32_t index, std::tuple<T, uint32_t> key)
 {
+    std::vector<std::tuple<T, uint32_t>> sorted = m_arr;
     if(std::get<1>(key) < std::get<1>(m_arr.at(index)))
     {
         std::cout<<"new key is smaller than current key"<<std::endl;
